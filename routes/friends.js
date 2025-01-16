@@ -4,6 +4,7 @@ const db = require('../db');
 const { asyncHandler } = require('../middlewares/asyncHandler');
 const { fillColors, hexToRgb } = require('../utils/colorUtils');
 const { sendColors } = require('../utils/mqtt');
+const { getTimeout } = require('../db');
 
 const router = express.Router();
 
@@ -152,17 +153,26 @@ router.post(
                         friend.tileIds,
                         colors
                     );
-                    await sendColors(
-                        toFriendId,
-                        colorMapping,
-                        fromFriend.color
-                    ).then( () => {
-                        db.saveMessage({
-                            colors,
+
+                    const timeout = await getTimeout(toFriendId);
+                    const currentDate = new Date()
+                    const currentMinutes = currentDate.getHours() * 60 + currentDate.getMinutes();
+                    const startMinutes = parseInt(timeout.start.split(":")[0]) * 60 + parseInt(timeout.start.split(":")[1]);
+                    const endMinutes = parseInt(timeout.end.split(":")[0]) * 60 + parseInt(timeout.end.split(":")[1]);
+
+                    if(currentMinutes >= startMinutes && currentMinutes <= endMinutes) { // If message received outside of friends timeout
+                        await sendColors(
                             toFriendId,
-                            fromFriendId,
-                        });
+                            colorMapping,
+                            fromFriend.color
+                        )
+                    }
+                    await db.saveMessage({
+                        colors,
+                        toFriendId,
+                        fromFriendId,
                     });
+
                 } catch (error) {
                     console.error(
                         `Failed to process friendID ${toFriendId}`,
