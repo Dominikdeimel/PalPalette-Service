@@ -55,6 +55,20 @@ router.post(
 );
 
 router.post(
+    '/:friendId/timeout',
+    asyncHandler(async (req, res) => {
+        try {
+            const friendId = req.params.friendId;
+            const { start, end } = req.body;
+            await db.setTimeout(friendId, start, end);
+        } catch (err) {
+            console.log(err);
+            res.sendStatus(500);
+        }
+    })
+)
+
+router.post(
     '/',
     asyncHandler(async (req, res) => {
         try {
@@ -141,7 +155,13 @@ router.post(
                         toFriendId,
                         colorMapping,
                         fromFriend.color
-                    );
+                    ).then( () => {
+                        db.saveMessage({
+                            colors,
+                            toFriendId,
+                            fromFriendId,
+                        });
+                    });
                 } catch (error) {
                     console.error(
                         `Failed to process friendID ${toFriendId}`,

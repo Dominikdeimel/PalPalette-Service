@@ -17,7 +17,7 @@ async function connectToDatabase() {
         await client.connect();
         console.log('Connected to MongoDB');
         db = client.db('Vreunde');
-        await createTTLIndex();
+        // await createTTLIndex();
         await createMessageCompoundIndex();
         return db;
     } catch (err) {
@@ -88,6 +88,30 @@ async function updateTimestamp(friendId, timestamp) {
             );
             throw new Error('Failed to update timestamp of friend');
         }
+    }
+}
+
+async function setTimeout(friendId, start, end) {
+    try {
+        const timeoutCollection = await getCollection('timeouts')
+        const result = await timeoutCollection.updateOne(
+            {friendId: friendId}, // Filter
+            {$set: {start : start, end: end}}, // Update
+            { upsert: true } // Options
+        )
+    } catch (err) {
+        throw(err)
+    }
+}
+
+async function getTimeout(friendId) {
+    try {
+        const timeoutCollection = await getCollection('timeouts');
+        const timeout = timeoutCollection.findOne({friendId: friendId})
+        if (!timeout) return null;
+        return timeout
+    } catch (err) {
+        throw err
     }
 }
 
@@ -316,4 +340,6 @@ module.exports = {
     getGeneratedCodes,
     saveMessageData,
     retrieveStudyData,
+    setTimeout,
+    getTimeout
 };
