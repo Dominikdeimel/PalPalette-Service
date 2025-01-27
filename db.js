@@ -93,24 +93,24 @@ async function updateTimestamp(friendId, timestamp) {
 
 async function setTimeout(friendId, start, end) {
     try {
-        const friendsCollection = await getCollection('friends')
+        const friendsCollection = await getCollection('friends');
         const result = await friendsCollection.updateOne(
-            {friendId: friendId}, // Filter
-            {$set: {'timeout.start' : start, 'timeout.end': end}}, // Update
+            { friendId: friendId }, // Filter
+            { $set: { 'timeout.start': start, 'timeout.end': end } }, // Update
             { upsert: true } // Options
         );
         if (result.modifiedCount === 0) {
             throw new Error('Friend not found');
         }
     } catch (err) {
-        throw (err);
+        throw err;
     }
 }
 
 async function getTimeout(friendId) {
     try {
         const friendsCollection = await getCollection('friends');
-        const friend = await friendsCollection.findOne({ friendId: friendId })
+        const friend = await friendsCollection.findOne({ friendId: friendId });
         if (!friend || !friend.timeout) return null;
         return friend.timeout;
     } catch (err) {
@@ -158,9 +158,9 @@ async function createNewFriend(data) {
         // Generate new color
         data.color = generateRandomColor(reservedColors);
         data.timeout = {
-            start: "00:00",
-            end: "23:59",
-        }
+            start: '00:00',
+            end: '23:59',
+        };
         data.lastPing = new Date();
         data.queue = [];
         return await friendsCollection.insertOne(data);
@@ -347,5 +347,5 @@ module.exports = {
     saveMessageData,
     retrieveStudyData,
     setTimeout,
-    getTimeout
+    getTimeout,
 };
