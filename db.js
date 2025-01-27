@@ -93,25 +93,28 @@ async function updateTimestamp(friendId, timestamp) {
 
 async function setTimeout(friendId, start, end) {
     try {
-        const timeoutCollection = await getCollection('timeouts')
-        const result = await timeoutCollection.updateOne(
-            {friendId: friendId}, // Filter
-            {$set: {start : start, end: end}}, // Update
+        const friendsCollection = await getCollection('friends');
+        const result = await friendsCollection.updateOne(
+            { friendId: friendId }, // Filter
+            { $set: { 'timeout.start': start, 'timeout.end': end } }, // Update
             { upsert: true } // Options
-        )
+        );
+        if (result.modifiedCount === 0) {
+            throw new Error('Friend not found');
+        }
     } catch (err) {
-        throw(err)
+        throw err;
     }
 }
 
 async function getTimeout(friendId) {
     try {
-        const timeoutCollection = await getCollection('timeouts');
-        const timeout = timeoutCollection.findOne({friendId: friendId})
-        if (!timeout) return null;
-        return timeout
+        const friendsCollection = await getCollection('friends');
+        const friend = await friendsCollection.findOne({ friendId: friendId });
+        if (!friend || !friend.timeout) return null;
+        return friend.timeout;
     } catch (err) {
-        throw err
+        throw err;
     }
 }
 
@@ -154,7 +157,10 @@ async function createNewFriend(data) {
         );
         // Generate new color
         data.color = generateRandomColor(reservedColors);
-
+        data.timeout = {
+            start: '00:00',
+            end: '23:59',
+        };
         data.lastPing = new Date();
         data.queue = [];
         return await friendsCollection.insertOne(data);
@@ -341,5 +347,5 @@ module.exports = {
     saveMessageData,
     retrieveStudyData,
     setTimeout,
-    getTimeout
+    getTimeout,
 };

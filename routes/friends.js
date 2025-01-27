@@ -68,7 +68,7 @@ router.post(
             res.sendStatus(500);
         }
     })
-)
+);
 
 router.post(
     '/',
@@ -155,24 +155,32 @@ router.post(
                     );
 
                     const timeout = await getTimeout(toFriendId);
-                    const currentDate = new Date()
-                    const currentMinutes = currentDate.getHours() * 60 + currentDate.getMinutes();
-                    const startMinutes = parseInt(timeout.start.split(":")[0]) * 60 + parseInt(timeout.start.split(":")[1]);
-                    const endMinutes = parseInt(timeout.end.split(":")[0]) * 60 + parseInt(timeout.end.split(":")[1]);
+                    const currentDate = new Date();
+                    const currentMinutes =
+                        currentDate.getHours() * 60 + currentDate.getMinutes();
+                    const startMinutes =
+                        parseInt(timeout.start.split(':')[0]) * 60 +
+                        parseInt(timeout.start.split(':')[1]);
+                    const endMinutes =
+                        parseInt(timeout.end.split(':')[0]) * 60 +
+                        parseInt(timeout.end.split(':')[1]);
 
-                    if(currentMinutes >= startMinutes && currentMinutes <= endMinutes) { // If message received outside of friends timeout
+                    if (
+                        currentMinutes >= startMinutes &&
+                        currentMinutes <= endMinutes
+                    ) {
+                        // If message received outside of friends timeout
                         await sendColors(
                             toFriendId,
                             colorMapping,
                             fromFriend.color
-                        )
+                        );
                     }
                     await db.saveMessage({
                         colors,
                         toFriendId,
                         fromFriendId,
                     });
-
                 } catch (error) {
                     console.error(
                         `Failed to process friendID ${toFriendId}`,
