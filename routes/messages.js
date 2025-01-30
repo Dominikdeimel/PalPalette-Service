@@ -18,8 +18,8 @@ router.get(
 
             if (startTime && endTime) {
                 query.timestamp = {
-                    $gte: new Date(Number(startTime) * 1000),
-                    $lte: new Date(Number(endTime) * 1000),
+                    $gte: new Date(Number(startTime)),
+                    $lte: new Date(Number(endTime)),
                 };
             }
 
