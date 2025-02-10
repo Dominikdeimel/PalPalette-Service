@@ -3,6 +3,7 @@ const multer = require('multer');
 const sharp = require('sharp');
 const { asyncHandler } = require('../middlewares/asyncHandler');
 const ColorThief = require('colorthief');
+const { hexToRgb } = require('../utils/colorUtils');
 
 const router = express.Router();
 
@@ -53,13 +54,12 @@ router.post(
     asyncHandler(async (req, res) => {
         try {
             const colors = await ColorThief.getPalette(req.file.buffer, 16);
-            const colorMap = colors.map(rgb => `rgb(${rgb.join(',')})`);
 
             // Free memory after processing
             req.file.buffer = null;
             req.file = null;
 
-            return res.status(200).json({ colors: colorMap });
+            return res.status(200).json({ colors: colors });
         } catch (err) {
             console.error(err);
             return res.status(500).json({ error: err.message });
