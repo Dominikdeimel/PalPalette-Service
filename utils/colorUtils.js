@@ -1,4 +1,9 @@
 function hexToRgb(hex) {
+    // If hex is already in rgb format return it
+    if (typeof hex !== 'string') {
+        return hex;
+    }
+
     hex = hex.startsWith('#') ? hex.slice(1) : hex;
 
     if (hex.length === 3) {
