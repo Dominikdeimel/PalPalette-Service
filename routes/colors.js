@@ -53,7 +53,7 @@ router.post(
     asyncHandler(async (req, res) => {
         try {
             const colors = await ColorThief.getPalette(req.file.buffer, 16);
-
+            console.log(colors);
             // Free memory after processing
             req.file.buffer = null;
             req.file = null;

@@ -1,4 +1,4 @@
-const mqtt = require('mqtt');
+/*const mqtt = require('mqtt');
 const config = require('../config/config');
 const { getTimeout } = require('../db');
 
@@ -38,3 +38,4 @@ module.exports = {
     client,
     sendColors,
 };
+*/

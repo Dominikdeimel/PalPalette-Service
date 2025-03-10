@@ -3,7 +3,7 @@ const db = require('../db');
 
 const { asyncHandler } = require('../middlewares/asyncHandler');
 const { fillColors, hexToRgb } = require('../utils/colorUtils');
-const { sendColors } = require('../utils/mqtt');
+//const { sendColors } = require('../utils/mqtt');
 const { getTimeout } = require('../db');
 
 const router = express.Router();
@@ -170,11 +170,11 @@ router.post(
                         currentMinutes <= endMinutes
                     ) {
                         // If message received outside of friends timeout
-                        await sendColors(
+                        /*await sendColors(
                             toFriendId,
                             colorMapping,
                             fromFriend.color
-                        );
+                        );*/
                     }
                     await db.saveMessage({
                         colors,
@@ -246,12 +246,12 @@ router.post(
             const fromFriendColor = fromFriend.color;
 
             const colorMapping = mapColorsToTileIds(friend.tileIds, colors);
-            if (friend.tileIds.length === 0) {
+            /*if (friend.tileIds.length === 0) {
                 // Friend is not online => Colors were successfully appended to friends queue
                 await db.addToQueue(friendId, colors);
                 res.sendStatus(202); // Send 202 Accepted status
             } else {
-                sendColors(friendId, colorMapping, fromFriendColor)
+                /sendColors(friendId, colorMapping, fromFriendColor)
                     .then(() => {
                         if (
                             shouldSaveMessage === true ||
@@ -269,7 +269,7 @@ router.post(
                         console.error(err);
                         res.sendStatus(500);
                     });
-            }
+            }*/
         } catch (err) {
             if (err.message === 'Friend not found') {
                 res.sendStatus(404);
